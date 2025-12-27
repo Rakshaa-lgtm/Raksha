@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Birthday Letter</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: #f5f3f0;
+			font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+			color: #222;
+		}
+
+		.container {
+			width: 100%;
+			max-width: 480px;
+			padding: 24px;
+		}
+
+		.card {
+			position: relative;
+			background: #fdfbf8;
+			border-radius: 16px;
+			box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+			padding: 32px 24px;
+			text-align: center;
+			transition: transform 0.3s ease, box-shadow 0.3s ease;
+		}
+
+		.card:focus-within {
+			outline: none;
+			box-shadow: 0 22px 50px rgba(0, 0, 0, 0.12);
+			transform: translateY(-2px);
+		}
+
+		button.envelope-button {
+			all: unset;
+			cursor: pointer;
+			width: 100%;
+		}
+
+		.envelope-visual {
+			margin: 0 auto 12px;
+			width: 140px;
+			height: 96px;
+			position: relative;
+		}
+
+		/* Closed envelope state */
+		.envelope-closed {
+			position: absolute;
+			inset: 0;
+		}
+
+		.envelope-base {
+			position: absolute;
+			inset: 18px 0 0;
+			border-radius: 0 0 10px 10px;
+			background: linear-gradient(145deg, #f1e1d2, #e0cbb5);
+			border: 1px solid rgba(135, 106, 79, 0.25);
+		}
+
+		.envelope-flap {
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 0;
+			height: 60px;
+			background: linear-gradient(145deg, #f6e4d4, #e7d1bb);
+			clip-path: polygon(0 0, 100% 0, 50% 100%);
+			border-top-left-radius: 10px;
+			border-top-right-radius: 10px;
+			border: 1px solid rgba(135, 106, 79, 0.25);
+			border-bottom: none;
+		}
+
+		.envelope-inner {
+			position: absolute;
+			inset: 22px 12px 10px;
+			background: #fdfbf8;
+			border-radius: 6px;
+			opacity: 0.7;
+		}
+
+		.envelope-string {
+			position: absolute;
+			top: 44px;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 40px;
+			height: 1px;
+			background: rgba(135, 106, 79, 0.5);
+		}
+
+		.envelope-seal {
+			position: absolute;
+			top: 38px;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			background: #c39b72;
+			box-shadow: 0 0 0 3px rgba(243, 231, 215, 0.9);
+		}
+
+		.tap-text {
+			font-size: 0.9rem;
+			letter-spacing: 0.12em;
+			text-transform: uppercase;
+			color: #7b6a58;
+			margin-bottom: 4px;
+		}
+
+		.sub-text {
+			font-size: 0.8rem;
+			color: #a1907a;
+		}
+
+		/* Letter state (hidden by default) */
+		.letter {
+			display: none;
+			text-align: left;
+			max-height: 70vh;
+			overflow-y: auto;
+			padding-right: 2px;
+		}
+
+		.letter-header {
+			text-align: center;
+			margin-bottom: 16px;
+		}
+
+		.letter-title {
+			font-size: 0.9rem;
+			letter-spacing: 0.16em;
+			text-transform: uppercase;
+			color: #7b6a58;
+		}
+
+		.letter-date {
+			font-size: 0.8rem;
+			color: #a1907a;
+			margin-top: 6px;
+		}
+
+		.letter-body {
+			background: #fdfbf8;
+			border-radius: 10px;
+			border: 1px solid rgba(160, 140, 120, 0.22);
+			padding: 18px 16px 20px;
+			line-height: 1.6;
+			font-size: 0.95rem;
+			white-space: pre-wrap;
+		}
+
+		/* Simple open state toggle (no auto animation) */
+		.card.open .envelope-section {
+			display: none;
+		}
+
+		.card.open .letter {
+			display: block;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="card" id="card">
+			<!-- Closed envelope view -->
+			<div class="envelope-section">
+				<button class="envelope-button" id="openButton" aria-label="Tap to open the envelope">
+					<div class="envelope-visual">
+						<div class="envelope-closed">
+							<div class="envelope-base"></div>
+							<div class="envelope-inner"></div>
+							<div class="envelope-flap"></div>
+							<div class="envelope-string"></div>
+							<div class="envelope-seal"></div>
+						</div>
+					</div>
+					<div class="tap-text">Tap to open</div>
+					<div class="sub-text">A birthday letter, just for you</div>
+				</button>
+			</div>
+
+			<!-- Letter view (shown only after tap) -->
+			<div class="letter" id="letter">
+				<div class="letter-header">
+					<div class="letter-title">Birthday Letter</div>
+				</div>
+				<div class="letter-body" id="letterBody">
+Mr prefect! 💗<br><br>Happy Birthday to the man who truly lives up to his name in every sense of the word! As we celebrate another year of your life, I’ve been reflecting on the several years we’ve spent as friends and how much of a blessing you have been to me. Even though you are older and I’ve always looked up to you, you have this amazing way of treating me like a true peer, and your friendship has become one of the most important parts of my life. I want you to know today that you are genuinely the sweetest and kindest person I have ever encountered; you have been my rock, my safe haven, and the best "therapist" I could ever ask for. I can never forget how you were the one to reach out and pull me up when I was at my lowest, and how you always seem to know exactly what to say to make the world feel right again. You give so much of your heart to others, and today, I hope you finally let the world give back to you. I feel so incredibly lucky to know you and to learn from your wisdom and your grace. May this birthday bring you as much peace and happiness as you have given me over the years, because a soul as beautiful as yours deserves nothing less than the very best. Happy Birthday, my wonderful friend!<br><br>I want this letter there these words no rewriting
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		const card = document.getElementById('card');
+		const openButton = document.getElementById('openButton');
+
+		openButton.addEventListener('click', () => {
+			card.classList.add('open');
+		});
+	</script>
+</body>
+</html>
